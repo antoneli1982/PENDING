@@ -397,12 +397,27 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
 .nuvem.erro i{background:#FFB020}
 .nuvem.off i{background:#8797AB}
 @keyframes pulso{0%{box-shadow:0 0 0 0 rgba(61,214,140,.6)}70%{box-shadow:0 0 0 7px rgba(61,214,140,0)}100%{box-shadow:0 0 0 0 rgba(61,214,140,0)}}
+#ovlSenha{position:fixed;inset:0;background:rgba(10,22,42,.55);display:none;place-items:center;z-index:330;padding:20px}
+#ovlSenha.on{display:grid}
+#ovlSenha .modal{max-width:400px}
 #ovlNuvem{position:fixed;inset:0;background:rgba(10,22,42,.55);display:none;place-items:center;z-index:320;padding:20px}
 #ovlNuvem.on{display:grid}
 #ovlNuvem .modal{max-width:520px}
 #ovlNuvem .lgf input{font-size:13.5px}
 .nvst{font-size:12.5px;color:var(--txt2);background:var(--bg);border-radius:7px;padding:9px 11px;line-height:1.5}
 .nvst b{color:var(--txt)}
+
+/* ---------- mostrar/ocultar senha ---------- */
+.olho{position:relative;display:flex;align-items:center}
+.olho input{padding-right:44px!important}
+.bolho{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:34px;height:34px;
+  border:0;background:transparent;cursor:pointer;border-radius:7px;padding:0;
+  display:grid;place-items:center;color:var(--txt3)}
+.bolho:hover{background:var(--bg);color:var(--vw-l)}
+.bolho:focus-visible{outline:2px solid var(--vw-l);outline-offset:-2px}
+.bolho svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bolho.vendo{color:var(--vw-l)}
+body.dark .bolho:hover{background:#243040;color:#8FB6F0}
 @media(max-width:760px){
   .meta{width:100%;margin-left:0}
   .meta input{width:100%}
@@ -441,7 +456,7 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
 
     <div class="lgpane on" id="paneEntrar">
       <label class="lgf"><span>Chapa VW</span><input id="lgChapa" inputmode="numeric" autocomplete="username" placeholder="somente números"></label>
-      <label class="lgf"><span>Senha</span><input id="lgSenha" type="password" autocomplete="current-password"></label>
+      <label class="lgf"><span>Senha</span><div class="olho"><input id="lgSenha" type="password" autocomplete="current-password"><button type="button" class="bolho" data-alvo="lgSenha" aria-label="Mostrar senha" title="Mostrar senha"></button></div></label>
       <label class="lgk"><input type="checkbox" id="lgManter"> Manter conectado neste computador</label>
       <div class="lgerro" id="lgErro"></div>
       <button class="btn pri big" id="bEntrar">Entrar</button>
@@ -451,8 +466,8 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
     <div class="lgpane" id="paneCadastro">
       <label class="lgf"><span>Chapa VW</span><input id="cdChapa" inputmode="numeric" placeholder="somente números"></label>
       <label class="lgf"><span>Nome</span><input id="cdNome" placeholder="como aparece no crachá"></label>
-      <label class="lgf"><span>Senha</span><input id="cdSenha" type="password" autocomplete="new-password"></label>
-      <label class="lgf"><span>Repita a senha</span><input id="cdSenha2" type="password" autocomplete="new-password"></label>
+      <label class="lgf"><span>Senha</span><div class="olho"><input id="cdSenha" type="password" autocomplete="new-password"><button type="button" class="bolho" data-alvo="cdSenha" aria-label="Mostrar senha" title="Mostrar senha"></button></div></label>
+      <label class="lgf"><span>Repita a senha</span><div class="olho"><input id="cdSenha2" type="password" autocomplete="new-password"><button type="button" class="bolho" data-alvo="cdSenha2" aria-label="Mostrar senha" title="Mostrar senha"></button></div></label>
       <div class="lgerro" id="cdErro"></div>
       <button class="btn pri big" id="bCadastrar">Enviar cadastro</button>
       <div class="lgnota">O cadastro fica aguardando liberação. Um master define se você entra como leitor ou editor.</div>
@@ -647,6 +662,22 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
 
 <div id="toast"></div>
 
+
+<div id="ovlSenha"><div class="modal">
+  <h4>Alterar minha senha</h4>
+  <p id="sePessoa"></p>
+  <label class="lgf" style="margin-bottom:10px"><span>Senha atual</span>
+    <div class="olho"><input id="seAtual" type="password"><button type="button" class="bolho" data-alvo="seAtual" aria-label="Mostrar senha"></button></div></label>
+  <label class="lgf" style="margin-bottom:10px"><span>Nova senha</span>
+    <div class="olho"><input id="seNova" type="password"><button type="button" class="bolho" data-alvo="seNova" aria-label="Mostrar senha"></button></div></label>
+  <label class="lgf" style="margin-bottom:12px"><span>Repita a nova senha</span>
+    <div class="olho"><input id="seNova2" type="password"><button type="button" class="bolho" data-alvo="seNova2" aria-label="Mostrar senha"></button></div></label>
+  <div class="lgerro" id="seMsg"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn" id="seFechar">Cancelar</button>
+    <button class="btn pri" id="seSalvar">Salvar nova senha</button>
+  </div>
+</div></div>
 <div id="ovlNuvem"><div class="modal">
   <h4>Sincronização em tempo real</h4>
   <p>Cole o endereço do Realtime Database e a chave da Web do projeto. Cada navegador se identifica sozinho no Firebase, sem login nenhum, e o banco pode ficar com as regras fechadas.</p>
@@ -2398,7 +2429,7 @@ function mostrarLogin(){
   estadoNuvem(NUVEM.estado,$("#nvTxt").textContent);
   $("#paneEntrar").classList.add("on"); $("#paneCadastro").classList.remove("on");
   erroLogin("#lgErro",""); erroLogin("#cdErro","");
-  $("#lgSenha").value=""; setTimeout(function(){$("#lgChapa").focus()},60);
+  $("#lgSenha").value=""; esconderSenhas(); setTimeout(function(){$("#lgChapa").focus()},60);
 }
 function entrar(chapa,manter){
   EU=USUARIOS[chapa]; EU.chapa=chapa;
@@ -2454,17 +2485,33 @@ $("#bSair").onclick=function(){
     [{t:"Cancelar"},{t:"Sair",cls:"dgr",fn:function(){encerrarSessao();EU=null;mostrarLogin()}}]);
 };
 $("#bSenha").onclick=function(){
-  var atual=prompt("Senha atual:"); if(atual===null)return;
-  if(EU.hash!==cifra(EU.chapa,atual,EU.salt))return toast("Senha atual incorreta");
-  var nova=prompt("Nova senha (mínimo 4 caracteres):"); if(nova===null)return;
-  if(String(nova).length<4)return toast("Senha muito curta");
-  var conf=prompt("Repita a nova senha:"); if(conf===null)return;
-  if(nova!==conf)return toast("As senhas não são iguais");
+  $("#sePessoa").textContent=EU.nome+" — chapa "+EU.chapa;
+  ["seAtual","seNova","seNova2"].forEach(function(i){$("#"+i).value=""});
+  esconderSenhas(); $("#seMsg").classList.remove("on");
+  $("#ovlSenha").classList.add("on");
+  setTimeout(function(){$("#seAtual").focus()},60);
+};
+$("#seFechar").onclick=function(){$("#ovlSenha").classList.remove("on");esconderSenhas()};
+$("#ovlSenha").onclick=function(e){if(e.target===$("#ovlSenha"))$("#seFechar").click()};
+$("#seSalvar").onclick=function(){
+  var msg=$("#seMsg");
+  function erro(t){msg.textContent=t;msg.classList.add("on");msg.classList.remove("ok")}
+  var atual=$("#seAtual").value, nova=$("#seNova").value, conf=$("#seNova2").value;
+  if(!atual)return erro("Informe a senha atual.");
+  if(EU.hash!==cifra(EU.chapa,atual,EU.salt))return erro("A senha atual está incorreta.");
+  if(nova.length<4)return erro("A nova senha precisa de pelo menos 4 caracteres.");
+  if(nova===SENHA_INICIAL)return erro("Escolha uma senha diferente da inicial.");
+  if(nova!==conf)return erro("As duas senhas não são iguais.");
   var ch=EU.chapa, st=sal();
   USUARIOS[ch].salt=st; USUARIOS[ch].hash=cifra(ch,nova,st); USUARIOS[ch].inicial=false;
   EU=USUARIOS[ch]; EU.chapa=ch;
-  gravarUsuarios(); if(ehMaster())pintarUsuarios(); toast("Senha alterada");
+  gravarUsuarios(); if(ehMaster())pintarUsuarios();
+  $("#ovlSenha").classList.remove("on"); esconderSenhas();
+  toast("Senha alterada");
 };
+["seAtual","seNova","seNova2"].forEach(function(i){
+  document.getElementById(i).addEventListener("keydown",function(e){if(e.key==="Enter")$("#seSalvar").click()});
+});
 
 /* ---------- aplicação das permissões ---------- */
 function aplicarPermissoes(){
