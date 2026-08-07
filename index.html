@@ -352,7 +352,10 @@ body.travado{overflow:hidden}
 .lglink{text-align:center;font-size:12.5px;color:var(--txt2);margin-top:2px}
 .lglink button{border:0;background:transparent;color:var(--vw-l);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;padding:0}
 .lgnota{font-size:11.5px;color:var(--txt3);line-height:1.45;background:var(--bg);border-radius:7px;padding:9px 11px}
-.lgpe{color:#9DB5DC;font-size:11.5px;letter-spacing:.3px}
+.lgpe{color:#9DB5DC;font-size:11.5px;letter-spacing:.3px;display:flex;align-items:center;gap:7px}
+.lgpe i{width:8px;height:8px;border-radius:50%;background:#7E8FA3;display:block;flex:0 0 auto}
+.lgpe.on i{background:#3DD68C;box-shadow:0 0 0 3px rgba(61,214,140,.22)}
+.lgpe.erro i{background:#FFB020}
 /* chip do usuário */
 .usr{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);
   border-radius:9px;padding:5px 8px 5px 6px;align-self:flex-end}
@@ -456,7 +459,7 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
       <div class="lglink"><button type="button" id="bVoltarLogin">Voltar para o acesso</button></div>
     </div>
   </div>
-  <div class="lgpe">Acesso controlado por chapa &middot; os dados ficam neste computador</div>
+  <div class="lgpe" id="lgPe"><i></i><span>Verificando a conexão&hellip;</span></div>
 </div>
 
 <header>
@@ -2087,6 +2090,15 @@ function estadoNuvem(e,txt){
   p.title=({on:"Conectado — as alterações aparecem para todos na hora",
             erro:"Sem conexão com o banco — trabalhando local, sincroniza quando voltar",
             off:"Somente neste computador — clique para conectar ao Firebase"})[e];
+  var pe=$("#lgPe");
+  if(pe){
+    pe.className="lgpe "+e;
+    pe.querySelector("span").textContent=({
+      on:"Acesso por chapa \u00b7 dados sincronizados em tempo real para toda a equipe",
+      erro:"Acesso por chapa \u00b7 sem conex\u00e3o no momento \u2014 os dados ficam neste computador e sobem quando voltar",
+      off:"Acesso por chapa \u00b7 sem sincroniza\u00e7\u00e3o \u2014 os dados ficam apenas neste computador"
+    })[e];
+  }
   var d=$("#nvEstado");
   if(d)d.innerHTML=({on:"<b>Conectado"+(NUVEM.token?" com acesso anônimo":"")+".</b> Alterações suas e dos colegas aparecem na hora nesta tela.",
      erro:"<b>Sem resposta do banco.</b> Confira a URL e as regras. Enquanto isso a ferramenta continua funcionando local.",
@@ -2383,6 +2395,7 @@ function erroLogin(el,msg,ok){
 }
 function mostrarLogin(){
   $("#login").classList.add("on"); document.body.classList.add("travado");
+  estadoNuvem(NUVEM.estado,$("#nvTxt").textContent);
   $("#paneEntrar").classList.add("on"); $("#paneCadastro").classList.remove("on");
   erroLogin("#lgErro",""); erroLogin("#cdErro","");
   $("#lgSenha").value=""; setTimeout(function(){$("#lgChapa").focus()},60);
