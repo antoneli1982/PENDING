@@ -422,6 +422,34 @@ body.dark .pp-master{background:#241E38;color:#A88FE0}
 .bolho svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .bolho.vendo{color:var(--vw-l)}
 body.dark .bolho:hover{background:#243040;color:#8FB6F0}
+
+/* ---------- FOTO DO USUÁRIO ---------- */
+.fotoesc{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.fotobt{width:62px;height:62px;border-radius:50%;border:2px dashed var(--line);background:var(--bg);
+  cursor:pointer;padding:0;overflow:hidden;display:grid;place-items:center;flex:0 0 auto;color:var(--txt3);position:relative}
+.fotobt:hover{border-color:var(--vw-l);color:var(--vw-l)}
+.fotobt.tem{border-style:solid;border-color:var(--vw-l)}
+.fotobt img{width:100%;height:100%;object-fit:cover;display:block}
+.fotobt svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+.fotobt.carregando::after{content:"";position:absolute;inset:0;background:rgba(0,35,90,.55);
+  background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  background-size:200% 100%;animation:varre 1s linear infinite}
+@keyframes varre{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.fototxt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fototxt b{font-size:12.5px;font-weight:600}
+.fototxt span{font-size:11.5px;color:var(--txt3);line-height:1.35}
+.fotolink{border:0;background:transparent;color:#B02418;font:inherit;font-size:11.5px;text-decoration:underline;
+  cursor:pointer;padding:2px 0;align-self:flex-start}
+.divsen{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt3);font-weight:700;
+  border-top:1px solid var(--line2);padding-top:12px;margin-bottom:10px}
+.uav{overflow:hidden}
+.uav img{width:100%;height:100%;object-fit:cover;display:block}
+.uavt{width:30px;height:30px;border-radius:50%;background:var(--vw);color:#fff;display:grid;place-items:center;
+  font-size:11px;font-weight:700;overflow:hidden;flex:0 0 auto}
+.uavt img{width:100%;height:100%;object-fit:cover;display:block}
+#tbUsr td.cel-foto{width:44px;padding-left:10px;padding-right:0}
+.celnome{display:flex;align-items:center;gap:9px}
+body.dark .fotobt{background:#1B2431}
 @media(max-width:760px){
   .meta{width:100%;margin-left:0}
   .meta input{width:100%}
@@ -468,6 +496,18 @@ body.dark .bolho:hover{background:#243040;color:#8FB6F0}
     </div>
 
     <div class="lgpane" id="paneCadastro">
+      <div class="fotoesc">
+        <button type="button" class="fotobt" id="cdFotoBt" title="Escolher foto">
+          <img id="cdFotoImg" alt="" hidden>
+          <svg id="cdFotoIco" viewBox="0 0 24 24"><circle cx="12" cy="9.4" r="3.4"/><path d="M4.5 19.2a7.8 7.8 0 0 1 15 0"/><circle cx="12" cy="12" r="9.2"/></svg>
+        </button>
+        <div class="fototxt">
+          <b>Sua foto</b>
+          <span id="cdFotoInfo">opcional — ajuda os colegas a identificar quem lançou</span>
+          <button type="button" class="fotolink" id="cdFotoRm" hidden>remover</button>
+        </div>
+        <input type="file" id="cdFotoIn" accept="image/*" hidden>
+      </div>
       <label class="lgf"><span>Chapa VW</span><input id="cdChapa" inputmode="numeric" placeholder="somente números"></label>
       <label class="lgf"><span>Nome</span><input id="cdNome" placeholder="como aparece no crachá"></label>
       <label class="lgf"><span>Senha</span><div class="olho"><input id="cdSenha" type="password" autocomplete="new-password"><button type="button" class="bolho" data-alvo="cdSenha" aria-label="Mostrar senha" title="Mostrar senha"></button></div></label>
@@ -668,8 +708,21 @@ body.dark .bolho:hover{background:#243040;color:#8FB6F0}
 
 
 <div id="ovlSenha"><div class="modal">
-  <h4>Alterar minha senha</h4>
+  <h4>Minha conta</h4>
   <p id="sePessoa"></p>
+  <div class="fotoesc" style="margin-bottom:16px">
+    <button type="button" class="fotobt" id="seFotoBt" title="Trocar foto">
+      <img id="seFotoImg" alt="" hidden>
+      <svg id="seFotoIco" viewBox="0 0 24 24"><circle cx="12" cy="9.4" r="3.4"/><path d="M4.5 19.2a7.8 7.8 0 0 1 15 0"/><circle cx="12" cy="12" r="9.2"/></svg>
+    </button>
+    <div class="fototxt">
+      <b>Foto do perfil</b>
+      <span id="seFotoInfo">clique na imagem para trocar</span>
+      <button type="button" class="fotolink" id="seFotoRm" hidden>remover foto</button>
+    </div>
+    <input type="file" id="seFotoIn" accept="image/*" hidden>
+  </div>
+  <div class="divsen">Alterar a senha</div>
   <label class="lgf" style="margin-bottom:10px"><span>Senha atual</span>
     <div class="olho"><input id="seAtual" type="password"><button type="button" class="bolho" data-alvo="seAtual" aria-label="Mostrar senha"></button></div></label>
   <label class="lgf" style="margin-bottom:10px"><span>Nova senha</span>
@@ -2456,6 +2509,106 @@ function esconderSenhas(){
 }
 ligarOlhos();
 
+
+/* ============================================================
+   FOTO DO USUÁRIO — compressão em etapas dentro do navegador
+   Reduz primeiro o tamanho da imagem, depois a qualidade,
+   até caber no limite. Assim o rosto continua nítido.
+   ============================================================ */
+var FOTO_LADOS=[168,132,104,80,64], FOTO_QUALIDADES=[.78,.68,.58,.48,.38], FOTO_LIMITE=14000;
+
+function comprimirFoto(arquivo){
+  return new Promise(function(ok,erro){
+    if(!arquivo)return erro(new Error("nenhum arquivo"));
+    if(!/^image\//.test(arquivo.type))return erro(new Error("o arquivo não é uma imagem"));
+    if(arquivo.size>12*1024*1024)return erro(new Error("imagem muito grande (máximo 12 MB)"));
+    function trabalhar(fonte,larg,alt){
+      var lado=Math.min(larg,alt);                    /* recorte quadrado pelo centro */
+      var sx=(larg-lado)/2, sy=(alt-lado)/2;
+      var cv=document.createElement("canvas"), ctx=cv.getContext("2d");
+      var melhor=null;
+      for(var i=0;i<FOTO_LADOS.length;i++){
+        var d=Math.min(FOTO_LADOS[i],lado);
+        cv.width=d; cv.height=d;
+        ctx.clearRect(0,0,d,d);
+        ctx.fillStyle="#FFFFFF"; ctx.fillRect(0,0,d,d);
+        ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="high";
+        ctx.drawImage(fonte,sx,sy,lado,lado,0,0,d,d);
+        for(var q=0;q<FOTO_QUALIDADES.length;q++){
+          var dados=cv.toDataURL("image/jpeg",FOTO_QUALIDADES[q]);
+          if(!melhor||dados.length<melhor.length)melhor=dados;
+          if(dados.length<=FOTO_LIMITE)return ok(dados);
+        }
+      }
+      ok(melhor);                                     /* não chegou ao alvo: entrega a menor */
+    }
+    /* createImageBitmap respeita a rotação da câmera do celular */
+    if(window.createImageBitmap){
+      createImageBitmap(arquivo,{imageOrientation:"from-image"})
+        .then(function(bm){trabalhar(bm,bm.width,bm.height)})
+        .catch(function(){viaImagem()});
+    }else viaImagem();
+    function viaImagem(){
+      var fr=new FileReader();
+      fr.onload=function(){
+        var im=new Image();
+        im.onload=function(){trabalhar(im,im.naturalWidth,im.naturalHeight)};
+        im.onerror=function(){erro(new Error("não consegui abrir a imagem"))};
+        im.src=fr.result;
+      };
+      fr.onerror=function(){erro(new Error("falha ao ler o arquivo"))};
+      fr.readAsDataURL(arquivo);
+    }
+  });
+}
+function pintarEscolhaFoto(pref,foto){
+  var bt=$("#"+pref+"FotoBt"), img=$("#"+pref+"FotoImg"), ico=$("#"+pref+"FotoIco"),
+      rm=$("#"+pref+"FotoRm"), info=$("#"+pref+"FotoInfo");
+  if(foto){
+    img.src=foto; img.hidden=false; ico.style.display="none";
+    bt.classList.add("tem"); rm.hidden=false;
+    info.textContent=Math.round(foto.length*.75/1024)+" KB — pronta para enviar";
+  }else{
+    img.removeAttribute("src"); img.hidden=true; ico.style.display="";
+    bt.classList.remove("tem"); rm.hidden=true;
+    info.textContent=pref==="cd"?"opcional — ajuda os colegas a identificar quem lançou"
+                                :"clique na imagem para trocar";
+  }
+}
+function ligarEscolhaFoto(pref,aoTerminar){
+  var bt=$("#"+pref+"FotoBt"), ent=$("#"+pref+"FotoIn"), rm=$("#"+pref+"FotoRm");
+  bt.onclick=function(){ent.click()};
+  rm.onclick=function(e){e.stopPropagation();aoTerminar("")};
+  ent.onchange=function(e){
+    var f=e.target.files[0]; e.target.value="";
+    if(!f)return;
+    bt.classList.add("carregando");
+    comprimirFoto(f)
+      .then(function(d){bt.classList.remove("carregando");aoTerminar(d)})
+      .catch(function(err){bt.classList.remove("carregando");toast("Foto não aceita: "+err.message)});
+  };
+}
+var FOTO_CADASTRO="";
+ligarEscolhaFoto("cd",function(d){FOTO_CADASTRO=d;pintarEscolhaFoto("cd",d)});
+ligarEscolhaFoto("se",function(d){
+  if(!EU)return;
+  USUARIOS[EU.chapa].foto=d||"";
+  EU=USUARIOS[EU.chapa]; EU.chapa=Object.keys(USUARIOS).filter(function(k){return USUARIOS[k]===EU})[0];
+  gravarUsuarios(); pintarEscolhaFoto("se",d); pintarAvatar();
+  if(ehMaster())pintarUsuarios();
+  toast(d?"Foto atualizada":"Foto removida");
+});
+function avatarHtml(u,classe){
+  if(u&&u.foto)return '<span class="'+classe+'"><img src="'+u.foto+'" alt=""></span>';
+  return '<span class="'+classe+'">'+esc(iniciais(u?u.nome:"?"))+'</span>';
+}
+function pintarAvatar(){
+  if(!EU)return;
+  var av=$("#usrIni");
+  if(EU.foto)av.innerHTML='<img src="'+EU.foto+'" alt="">';
+  else av.textContent=iniciais(EU.nome);
+}
+
 /* ---------- entrada e saída ---------- */
 function erroLogin(el,msg,ok){
   var e=$(el); e.textContent=msg||""; e.classList.toggle("on",!!msg); e.classList.toggle("ok",!!ok);
@@ -2507,10 +2660,11 @@ $("#bCadastrar").onclick=function(){
   if(s1.length<4)return erroLogin("#cdErro","A senha precisa de pelo menos 4 caracteres.");
   if(s1!==s2)return erroLogin("#cdErro","As senhas não são iguais.");
   var st=sal();
-  USUARIOS[ch]={nome:nm,salt:st,hash:cifra(ch,s1,st),papel:"pendente",
+  USUARIOS[ch]={nome:nm,salt:st,hash:cifra(ch,s1,st),papel:"pendente",foto:FOTO_CADASTRO||"",
                 criado:new Date().toISOString(),ultimo:"",liberadoPor:""};
   gravarUsuarios();
   $("#cdChapa").value="";$("#cdNome").value="";$("#cdSenha").value="";$("#cdSenha2").value="";
+  FOTO_CADASTRO="";pintarEscolhaFoto("cd","");
   erroLogin("#cdErro","Cadastro enviado. Um master precisa liberar seu acesso.",true);
 };
 [["lgChapa","bEntrar"],["lgSenha","bEntrar"],["cdSenha2","bCadastrar"]].forEach(function(par){
@@ -2523,6 +2677,7 @@ $("#bSair").onclick=function(){
 $("#bSenha").onclick=function(){
   $("#sePessoa").textContent=EU.nome+" — chapa "+EU.chapa;
   ["seAtual","seNova","seNova2"].forEach(function(i){$("#"+i).value=""});
+  pintarEscolhaFoto("se",EU.foto||"");
   esconderSenhas(); $("#seMsg").classList.remove("on");
   $("#ovlSenha").classList.add("on");
   setTimeout(function(){$("#seAtual").focus()},60);
@@ -2556,7 +2711,7 @@ function aplicarPermissoes(){
   if(!EU)return;
   b.classList.add(EU.papel);
   $("#usrNome").textContent=EU.nome;
-  $("#usrIni").textContent=iniciais(EU.nome);
+  pintarAvatar();
   $("#usrPapel").textContent=PAPEIS[EU.papel]+" · "+EU.chapa;
   var ed=podeEditar();
   ["bAdd","bDelSel","bImportar"].forEach(function(i){
@@ -2599,7 +2754,7 @@ function pintarUsuarios(){
     var u=USUARIOS[ch], sou=ch===eu;
     return '<tr data-ch="'+ch+'">'+
       '<td><b>'+esc(ch)+'</b>'+(sou?' <span class="pperm pp-master">você</span>':'')+'</td>'+
-      '<td>'+esc(u.nome)+'</td>'+
+      '<td><span class="celnome">'+avatarHtml(u,"uavt")+esc(u.nome)+'</span></td>'+
       '<td><select class="selperm" data-a="papel"'+(sou?" disabled":"")+'>'+
         ["pendente","leitor","editor","master"].map(function(p){
           return '<option value="'+p+'"'+(u.papel===p?" selected":"")+'>'+PAPEIS[p]+'</option>'}).join("")+
